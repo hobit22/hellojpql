@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -18,28 +19,27 @@ public class JpaMain {
         try {
 
             Team team = new Team();
-            team.setName("teamA");
-
+            team.setName("팀1");
             em.persist(team);
 
-            Member member = new Member();
-            member.setUsername("관리자");
-            member.setAge(10);
-            member.setTeam(team);
-            member.setMemberType(MemberType.USER);
+            Member member1 = new Member();
+            member1.setUsername("관리자1");
+            member1.setTeam(team);
+            em.persist(member1);
 
-            em.persist(member);
+            Member member2 = new Member();
+            member2.setUsername("관리자1");
+            member2.setTeam(team);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            String query = "select nullif(m.username, '관리자') as username " +
-                    "from Member m";
+            String query = "select m.username From Team t join t.members m ";
 
-            List<String> resultList = em.createQuery(query, String.class).getResultList();
-            for (String s : resultList) {
-                System.out.println("s = " + s);
-            }
+            Collection resultList = em.createQuery(query, String.class).getResultList();
+
+            System.out.println("resultList = " + resultList);
 
             tx.commit();
         } catch (Exception e) {
